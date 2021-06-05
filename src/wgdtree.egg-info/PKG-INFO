@@ -1,0 +1,36 @@
+Metadata-Version: 2.1
+Name: wgdtree
+Version: 0.0.1
+Summary: A small package for simulating and analysing phylo-genetic trees.
+Home-page: https://github.com/henrykindt/wgdtree
+Author: Charles Henry
+Author-email: Charlesnhenry@gmail.com
+License: UNKNOWN
+Project-URL: Bug Tracker, https://github.com/henrykindt/wgdtree/issues
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# wgdtree Package
+
+This package provides the following functions:
+
+
+Function | Description
+-------- | -----------
+rrates(labeled_gene_tree) |  returns conditional probability of retention
+
+find_wgd(species_tree, gene_tree) |  return gene tree with labeled wgd events
+
+sim(species_tree,n,path) | returns 0, writes 'n' simulated trees to 'path'
+
+root(species_tree,gene_tree,mode) | roots gene_tree with species_tree, roots vary by mode
+        
+        
+*all trees must be in .newick format, and the ete3 package is required.
+
+
