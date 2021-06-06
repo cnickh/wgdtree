@@ -1,0 +1,13 @@
+#!/bin/bash
+#Author : Charles Henry 
+
+for f in *; do
+
+file="$(cat $f)"
+
+if [[ $file != *"#append the species to the newick string"* ]]; then
+
+echo $f >> batch.txt
+fi
+
+done

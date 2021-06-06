@@ -1,8 +1,30 @@
 
-from ete3 import Tree, TreeStyle
+#Read in trees do setup etc...
+import sys
+import toytree
+import toyplot.png
+
+#set filenames do set-up etc...
+in_stree = sys.argv[1]
+gene_batch = sys.argv[2]
+pSpecies = sys.argv[3]
+#readin reconciled gene trees and species tree
+gf = open(gene_batch, "r")
+
+gene_trees = []
+
+line = gf.readline()
+
+sf = open(in_stree, "r")
+species_tree = toytree.tree(sf.read(),tree_format=1)
+
+while(line): 
+    f = open("rec_trees/"+line[:-1], "r")
+    gene_trees.append(toytree.tree(f.read(),tree_format=1))
+    line = gf.readline()
 
 #places wgd events on the gene tree
-def find_WGD(species_root,gene_tree,gene_wgd=gene_tree,wgd_num=0):
+def find_WGD(species_root,gene_tree,gene_wgd,wgd_num):
 
     #get children
     children = species_root.get_children()
@@ -66,7 +88,7 @@ def find_WGD(species_root,gene_tree,gene_wgd=gene_tree,wgd_num=0):
 
 
 #count losses 
-def _rrates(gene_tree,pSpecies):
+def rrates(gene_tree,pSpecies):
     
     losses = 0
     #find most recent wgd and get all present sequences
@@ -95,3 +117,23 @@ lpossible = 0
 rpossible = 0
 total_llosses = 0
 total_rlosses = 0
+for tree in gene_trees:
+    
+    find_WGD(species_tree.treenode,tree,tree.treenode,0)
+    
+    filename = "finished_trees/tree" + str(num) + ".newick.labeled"
+    tree.write(filename,tree_format=0,features=["event0","event1"])
+    
+    results = rrates(tree,pSpecies)
+
+    if results[1] == "M":
+        lpossible += len(pSpecies)*2
+        total_llosses += results[0]
+        
+    elif results[1] == "P":
+        rpossible += len(pSpecies)*4
+        total_rlosses += results[0]
+    num+=1
+if(lpossible):
+    print("Percent lossed after loss: " + str(total_llosses)+"/"+str(lpossible))
+print("Percent lossed after a retained event: " + str(total_rlosses)+"/"+str(rpossible))
