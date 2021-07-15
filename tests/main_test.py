@@ -1,9 +1,7 @@
-from wgdtree.sim import sim
-from wgdtree.root import root, reconcile
-from ete3 import Tree
-from ete3 import PhyloTree
+from wgdtree import sim, root
+from ete3 import Tree, PhyloTree
 
-NUM_TREES = 20
+NUM_TREES = 100
 trees = ["balanced.newick","caterpillar.newick","small.newick"]
 
 for tree in trees:
@@ -16,7 +14,7 @@ for tree in trees:
 
         g_tree = PhyloTree(tree+"_trees/tree"+ str(num) +".newick",format=1)
 
-        g_tree = reconcile(g_tree,s_tree)
+        g_tree = root(g_tree,s_tree)
 
 
 

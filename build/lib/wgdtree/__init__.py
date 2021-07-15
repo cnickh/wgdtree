@@ -1,4 +1,6 @@
-from wgdtree import sim
-from wgdtree import rrate
-from wgdtree import root
-from wgdtree import split_it
+#get all our function for easy access
+
+from wgdtree.simulation import sim
+from wgdtree.retention_rates import rrates, place_wgd
+from wgdtree.rooting import root
+from wgdtree.split import break_up
