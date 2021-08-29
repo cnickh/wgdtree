@@ -1,7 +1,7 @@
 # wgdtree Package
 
 
-install with ```console $ pip install wgdtree ```
+install with ```$ pip install wgdtree ```
 
 This package provides the following functions:
 
