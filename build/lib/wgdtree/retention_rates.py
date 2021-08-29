@@ -1,156 +1,143 @@
 from ete3 import Tree
 
-
 #@desc this function will make an attempt to attribute duplications labelled on a gene tree to
 # wgd events on a species tree.
-def place_wgd(species_root,gene_wgd,wgd_num=0):
-
-    #get children        
-        
-    #check if node is a duplication
-    if('WGD' in species_root.features and species_root.WGD == 'Y'): 
-        pSpecies = []
-            
-        #get all species names present for wgd
-        if len(species_root.get_children()) < 2:
-            pSpecies.append(species_root.name)
-        else:
-            for p in species_root.get_leaves():
-                pSpecies.append(p.name)
-                    
-        if (pSpecies):    
-            cmnleaves = [] #create array to match trees
-                
-            #search gene_tree for all leaves that corespond to affected species
-            for g in gene_wgd.get_leaves():
-                for s in pSpecies:
-                    if s in g.name:
-                        cmnleaves.append(g.name)
-                                    
-            if(cmnleaves):
-                             
-                #create event name         
-                eventname = "event" + str(wgd_num)  
-                             
-                #find matching node in gene tree
-                try:
-                    gene_wgd = gene_wgd.get_common_ancestor(cmnleaves)
-                except:
-                    gene_wgd = gene_wgd
-
-                    
-                #check if were at the correct node make recursive call if were at the wrong node
-                for node in gene_wgd.get_leaves():
-                    if node.name.split('_')[0] not in pSpecies:
-                        children = gene_wgd.get_children()
-                        if(children):
-                                
-                            place_wgd(species_root,children[0],wgd_num)
-                            place_wgd(species_root,children[1],wgd_num)
-                                
-                        return
-                
-                children = gene_wgd.get_children()
-                if children:
-                    num = 0
-                    for c in children:
-                        if 'evoltype' in c.features and c.evoltype == 'D':
-                            num +=1
-                            
-                    if num == 2:
-                        place_wgd(species_root,children[0],wgd_num)
-                        place_wgd(species_root,children[1],wgd_num)
-                        return
-                    
-
-                #place/label duplication
-                if('evoltype' in gene_wgd.features and gene_wgd.evoltype == 'D'):
-                    gene_wgd.add_feature(eventname,"P")
-                        
-                    children = species_root.get_children()
-                    if children:
-                        nodeR = children[0]
-                        nodeL = children[1]
-                        
-                        children = gene_wgd.get_children()
-                            
-                        if(children):   
-                            
-                            place_wgd(nodeR,children[0],wgd_num+1)
-                            place_wgd(nodeL,children[1],wgd_num+1)
-                            
-                            place_wgd(nodeL,children[0],wgd_num+1)
-                            place_wgd(nodeR,children[1],wgd_num+1)
-            
-                    return
-                        
-                else:
-                    gene_wgd.add_feature(eventname,"M")
-                    wgd_num+=1
-                    
+def place_wgd(species_root,gene_wgd,wgd_num=0):      
+    
     children = species_root.get_children()
-    if children:
-        nodeR = children[0]
-        nodeL = children[1]
-        place_wgd(nodeR,gene_wgd,wgd_num)
-        place_wgd(nodeL,gene_wgd,wgd_num)                                        
+    
+    if('WGD' in species_root.features and species_root.WGD == 'Y'):
+                
+        #match species tree node to gene tree
+        species = []
+        cmn_leaves = []
+        
+        for s in species_root.get_leaves():
+            species.append(s.name)
+            
+            for g in gene_wgd.get_leaves():
+                if s.name in g.name:
+                    cmn_leaves.append(g)
+        
+        #if we were able to match leaves to the gene tree
+        if cmn_leaves:
+            
+            nxt_wgd = gene_wgd.get_common_ancestor(cmn_leaves)
+            
+            leaves = []
+            
+            #get all the species under the chosen node on the gene tree
+            for l in nxt_wgd.get_leaves():
+                if l.name.split('_')[0] not in leaves:
+                    leaves.append(l.name.split('_')[0])
+            
+            #make sure were in the right place before placing
 
+            if sorted(species) == sorted(leaves): 
+                
+                c = nxt_wgd.get_children()
+                
+                #place event
+                eventname = "event" + str(wgd_num)
+                
+                if 'evoltype' in nxt_wgd.features and nxt_wgd.evoltype == 'D':
+                       
+                    #make sure we are placing wgd events to minimize ssd events
+                    if c and 'evoltype' in c[0].features and 'evoltype' in c[1].features and c[0].evoltype == 'D' and c[1].evoltype == 'D':
+                        
+                        place_wgd(species_root,c[0],wgd_num)
+                        place_wgd(species_root,c[1],wgd_num)
+                
+                    else:
+                        
+                        nxt_wgd.add_feature(eventname,"P")
+                            
+                        #make recursive calls
+                        if children and c:
+                                                            
+                            place_wgd(children[0],c[0],wgd_num+1)
+                            place_wgd(children[1],c[1],wgd_num+1)
+                                                            
+                            place_wgd(children[1],c[0],wgd_num+1)
+                            place_wgd(children[0],c[1],wgd_num+1)
+
+                else:
+                    for l in nxt_wgd.get_leaves():
+                        if "_LOST" not in l.name:
+                            nxt_wgd.add_feature(eventname,"M")
+                            break
+                    
+                    if children:
+                        place_wgd(children[0],gene_wgd,wgd_num+1)
+                        place_wgd(children[1],gene_wgd,wgd_num+1)
+                
+            elif len(leaves) > len(species):
+                place_wgd(species_root,gene_wgd.children[0],wgd_num)
+                place_wgd(species_root,gene_wgd.children[1],wgd_num)
+                
+                    
+    else:
+        if children:
+            place_wgd(children[0],gene_wgd,wgd_num)
+            place_wgd(children[1],gene_wgd,wgd_num)
+    
+    
     return 0
 
 
-
-
 #count copies 
-def rrates(gene_tree,pSpecies):
+def rrates(gene_tree,species_tree,pSpecies):
     
-    p=0
+    #initialize variables
+    rcopies = 0
+    lcopies = 0
+    l_poss = 0
+    r_poss = 0
+    p = 0
+    
+    
     for l in gene_tree.get_leaves():
-        if pSpecies in l.name:
-            if "*LOST" not in l.name:
-                p+=1
-    if p==0:
-        return 0
-    
-    copies = 0
-    #find most recent wgd and get all present sequences
-    for g in gene_tree.traverse():
-        if("event0" in g.features):   
-            for n in g.traverse():
-                if ("event1" in n.features):
-                    for l in n.get_leaves():
-                        if pSpecies in l.name and "*LOST" not in l.name:
-                            copies+=1
+        if pSpecies in l.name and "_LOST" not in l.name:
+            p+=1
+
+    if p!=0:
+        
+        place_wgd(species_tree,gene_tree)
+ 
+        for g in gene_tree.iter_descendants():
+            if("event0" in g.features):
+                copies = 0
+                c_poss = 0
+                
+                for n in g.iter_descendants():
+                    if "event1" in n.features:
+                        c_poss += 2
+                        temp = 0
+                        for l in n.get_leaves():
+                            if pSpecies in l.name and "_LOST" not in l.name:
+                                temp+=1
                                 
-            return (copies,g.event0)
-                                                                        
-    return -1
+                        if temp > 2:
+                            copies += 2
+                        else:
+                            copies += temp
+                
+                if g.event0 == 'M':
+                    lcopies += copies
+                    l_poss += c_poss
+                
+                elif g.event0 == 'P':
+                    rcopies += copies
+                    r_poss += c_poss
 
-#Actually doing stuff starts here#
-def rrates_batch(gene_trees,species_tree,pSpecies):
-    num=0
-    lpossible = 0
-    rpossible = 0
-    total_llosses = 0
-    total_rlosses = 0
-    for tree in gene_trees:
-        
-        place_wgd(species_tree,tree)
-        
-        filename = "finished_trees/tree" + str(num) + ".newick.labeled"
-        tree.write(filename,format=0,features=["event0","event1"])
-        
-        results = rrates(tree,pSpecies)
-
-        if results[1] == "M":
-            lpossible += len(pSpecies)*2
-            total_llosses += results[0]
-            
-        elif results[1] == "P":
-            rpossible += len(pSpecies)*4
-            total_rlosses += results[0]
-        num+=1
-    if(lpossible):
-        print("Percent lossed after loss: " + str(total_llosses)+"/"+str(lpossible))
-    print("Percent lossed after a retained event: " + str(total_rlosses)+"/"+str(rpossible))
+    if r_poss == 0 and l_poss == 0:
+        ret = -1
+    elif rcopies == 0 and lcopies == 0 and p != 0:
+        ret = -2
+    else:
+        ret = ((rcopies,r_poss),(lcopies,l_poss),p)
     
-    return
+    return ret
+
+
+

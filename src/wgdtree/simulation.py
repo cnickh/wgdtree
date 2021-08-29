@@ -174,7 +174,7 @@ def sim(species_tree,n,path=".",ssd=.002,loss=.002):
 
         #randomize names
         for n in trees[x].get_leaves():
-            n.name = n.name + "_" + str(randint(0,99999))
+            n.name = n.name + "_" + str(randint(0,9999999))
 
         #write trees to files
         filename = path + "/tree" + str(num) + ".newick"
