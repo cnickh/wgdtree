@@ -3,7 +3,9 @@
 
 install with ```$ pip install wgdtree ```
 
-to use the package in your code add import wgdtree
+```python
+import wgdtree
+````
 
 This package provides the following functions:
 
