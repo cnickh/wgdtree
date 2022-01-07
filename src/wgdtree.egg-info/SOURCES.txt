@@ -3,7 +3,7 @@ README.md
 pyproject.toml
 setup.cfg
 src/wgdtree/__init__.py
-src/wgdtree/place_wgd.py
+src/wgdtree/batch_run.py
 src/wgdtree/retention_rates.py
 src/wgdtree/rooting.py
 src/wgdtree/simulation.py

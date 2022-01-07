@@ -1,6 +1,5 @@
 from ete3 import Tree
 
-
 def sortFunc(e):
     return e['len']
 
@@ -21,8 +20,6 @@ def break_up(tree,size=100):
         _n = poss_trees.pop()['node']
         print("Removing: " + str(len(_n.get_leaves())) + " | Tree_total: " + str(len(tree.get_leaves())))
         nw_trees.append(_n.detach())
-        
-        
         
     nw_trees.append(tree)
     return nw_trees

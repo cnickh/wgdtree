@@ -75,18 +75,15 @@ def place_wgd(species_root,gene_wgd,wgd_num=0):
                 place_wgd(species_root,gene_wgd.children[0],wgd_num)
                 place_wgd(species_root,gene_wgd.children[1],wgd_num)
                 
-                    
     else:
         if children:
             place_wgd(children[0],gene_wgd,wgd_num)
             place_wgd(children[1],gene_wgd,wgd_num)
     
-    
     return 0
 
-
 #count copies 
-def rrates(gene_tree,species_tree,pSpecies):
+def rrates(gene_tree,pSpecies):
     
     #initialize variables
     rcopies = 0
@@ -95,15 +92,12 @@ def rrates(gene_tree,species_tree,pSpecies):
     r_poss = 0
     p = 0
     
-    
     for l in gene_tree.get_leaves():
         if pSpecies in l.name and "_LOST" not in l.name:
             p+=1
 
     if p!=0:
-        
-        place_wgd(species_tree,gene_tree)
- 
+         
         for g in gene_tree.iter_descendants():
             if("event0" in g.features):
                 copies = 0
@@ -133,11 +127,8 @@ def rrates(gene_tree,species_tree,pSpecies):
     if r_poss == 0 and l_poss == 0:
         ret = -1
     elif rcopies == 0 and lcopies == 0 and p != 0:
-        ret = -2
+        ret = -1
     else:
         ret = ((rcopies,r_poss),(lcopies,l_poss),p)
     
     return ret
-
-
-

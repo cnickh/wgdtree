@@ -157,20 +157,20 @@ def reconcile(G,_S):
     
 def root(gene_tree,species_tree):
         
-    dups = 999999
-
-    for root in gene_tree.get_children():
+    score = 999999
+    for root in gene_tree.iter_descendants():
+        
         tree = gene_tree.copy()
         tree.set_outgroup(tree&root.name)
         r_tree = reconcile(tree,species_tree)
-        temp = find_dups(r_tree) + find_loss(r_tree)
-        if(temp < dups):
+        temp = find_loss(r_tree) + find_dups(r_tree)
+        if(temp < score):
             best_root = root
-            dups = temp
+            score = temp
 
     gene_tree.set_outgroup(best_root)
     tree = reconcile(gene_tree,species_tree)
-    find_dups(tree)
     find_loss(tree)
+    find_dups(tree)
     return tree
 
