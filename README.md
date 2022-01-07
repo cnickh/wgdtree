@@ -25,7 +25,7 @@ loss_rate = 0.002
 
 species_tree = PhyloTree("example_species_tree.newick")
 
-sim(species_tree,n,path,ssd_rate,loss_rate)
+wgtree.sim(species_tree,n,path,ssd_rate,loss_rate)
 
 ````
 
@@ -37,7 +37,7 @@ species_tree = PhyloTree("example_species_tree.newick")
 
 gene_tree = PhyloTree("example_gene_tree.newick")
 
-rooted_gene_tree = root(species_tree,gene_tree)
+rooted_gene_tree = wgdtree.root(species_tree,gene_tree)
 ````
 
 **place_wgd(species_tree, gene_tree)** |  This function accepts a rooted gene tree and a species tree labelled with one pair of consecutive whole genome duplication events. The function will return a copy of the gene tree with labels added to nodes that represent wgd events. The added events will either be marked with a 'P' for present or 'M' for missing. All annotations will be made in NHX format.
@@ -47,7 +47,7 @@ species_tree = PhyloTree("example_species_tree.newick")
 
 gene_tree = PhyloTree("example_gene_tree.newick")
 
-labelled_gene_tree = place_wgd(species_tree, gene_tree)
+labelled_gene_tree = wgdtree.place_wgd(species_tree, gene_tree)
 ````
 
 
@@ -58,14 +58,14 @@ labelled_gene_tree = place_wgd(species_tree, gene_tree)
 
 pSpecies = "Dinosourous_rex"
 
-results = rrates(labeled_gene_tree, pSpecies)
+results = wgdtree.rrates(labeled_gene_tree, pSpecies)
 
 retained_retained = results[0]
                 
 lossed_retained = results[1]
 ````
 
-***getRetainedDups(list_of_gene_tree,species_tree)*** | This function accepts an array of gene tree files in newick format and a species tree labelled with all whole genome duplication events on the lineage. The function will calculate the conditional probability statistic for all consecutive pairs of events on the species tree.
+***run(list_of_gene_tree,species_tree)*** | This function accepts an array of gene tree files in newick format and a species tree labelled with all whole genome duplication events on the lineage. The function will calculate the conditional probability statistic for all consecutive pairs of events on the species tree.
 
 ```python
 
@@ -73,7 +73,7 @@ list_of_gene_trees = ["gene_tree0.newick","gene_tree1.newick","gene_tree2.newick
 
 species_tree = PhyloTree("species_tree")
 
-results = getRetainedDups(list_of_gene_trees,species_tree)
+results = wgdtree.run(list_of_gene_trees,species_tree)
 
 total_retained_retained = results[0]
 
