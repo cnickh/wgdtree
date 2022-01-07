@@ -65,7 +65,11 @@ retained_retained = results[0]
 lossed_retained = results[1]
 ````
 
-***run(list_of_gene_tree,species_tree)*** | This function accepts an array of gene tree files in newick format and a species tree labelled with all whole genome duplication events on the lineage. The function will calculate the conditional probability statistic for all consecutive pairs of events on the species tree.
+***run(list_of_gene_tree,species_tree)*** | This function accepts an array of gene tree files in newick format and a species tree 
+labelled with all whole genome duplication events on the lineage. The function will calculate the conditional probability statistic 
+for all consecutive pairs of events on the species tree. The function will return a dictionary where species names as they appear on the
+species trees are used as keys that correspond to a list of tuples of the form (P(L|R),P(R|R)). There will be a seperate tuple for each event 
+pair that species was present for.
 
 ```python
 
@@ -73,11 +77,29 @@ list_of_gene_trees = ["gene_tree0.newick","gene_tree1.newick","gene_tree2.newick
 
 species_tree = PhyloTree("species_tree")
 
-results = wgdtree.run(list_of_gene_trees,species_tree)
+results_dict = wgdtree.run(list_of_gene_trees,species_tree)
+```
 
-total_retained_retained = results[0]
+example results_dict.txt
+```
+{
 
-total_lossed_retained = results[1]
+'species_A': [], 
+
+'species_B': [(0.647454313863336, 0.5535554282888006)], 
+
+'species_C': [(0.448686400377538, 0.2861785837493464)], 
+
+'species_D': [(0.37466663338849644, 0.3420519777168986)], 
+
+'species_E': [(0.205555576769, 0.2314676413445378)], 
+
+'species_F': [(0.21592868256170894, 0.18623158187378372), (0.3076854227579211, 0.2671778530173272), (0.29352608422375864, 0.2732342007434944)], 
+
+'species_G': [(0.26377679954349065, 0.23002217890987298), (0.3769475818129163, 0.33331715367440057), (0.36203343256239984, 0.33394428152492667)]
+
+}
+
 ```
 
 
