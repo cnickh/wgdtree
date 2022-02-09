@@ -25,7 +25,7 @@ loss_rate = 0.002
 
 species_tree = PhyloTree("example_species_tree.newick")
 
-wgtree.sim(species_tree,n,path,ssd_rate,loss_rate)
+wgdtree.sim(species_tree,n,path,ssd_rate,loss_rate)
 
 ````
 
