@@ -86,7 +86,10 @@ def bd_model(root,g_tree,c):
 
     #create specified wgd events
     if("WGD" in root.features and root.WGD == "Y"):
-        wgd_t = int(root.T)
+        if("T" in root.features):
+            wgd_t = int(root.T)
+        else:
+            wgd_t = int(root.dist)/2
     
     branch = root.dist
 
